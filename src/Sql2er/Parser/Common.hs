@@ -28,7 +28,7 @@ parseDefaultValue =
 
 parseTableConstraint :: Parser TableConstraint
 parseTableConstraint = do
-  _ <- optional $ lexeme (string "constraint") *> lexeme (takeWhile1P Nothing (/= ' '))
+  _ <- optional $ lexeme (string "constraint") *> parseWord
   choice $
     try
       <$> [ foreignKeyConstraint
