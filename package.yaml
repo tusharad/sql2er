@@ -40,6 +40,8 @@ ghc-options:
 
 library:
   source-dirs: src
+  default-extensions:
+    - ImportQualifiedPost
 
 executables:
   sql2er-exe:
@@ -56,9 +58,15 @@ tests:
   sql2er-test:
     main:                Spec.hs
     source-dirs:         test
+    default-extensions:
+      - ImportQualifiedPost
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
     - sql2er
+    - megaparsec
+    - text
+    - tasty
+    - tasty-hunit

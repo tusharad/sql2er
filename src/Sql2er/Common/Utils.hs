@@ -3,19 +3,31 @@
 module Sql2er.Common.Utils
   ( lexeme
   , ignoreStatement
+  , begin
+  , commit
+  , rollback
   ) where
 
 import Control.Monad
 import Sql2er.Common.Types
 import Text.Megaparsec
 import Text.Megaparsec.Char
-import qualified Text.Megaparsec.Char.Lexer as L
+import Text.Megaparsec.Char.Lexer qualified as L
 
 lexeme :: Parser a -> Parser a
 lexeme = L.lexeme spaceConsumer
 
 spaceConsumer :: Parser ()
 spaceConsumer = L.space space1 (L.skipLineComment "--") empty
+
+begin :: Parser ()
+begin = void $ lexeme (string "begin") 
+
+commit :: Parser ()
+commit = void $ lexeme (string "commit")
+
+rollback :: Parser ()
+rollback = void $ lexeme (string "rollback")
 
 ignoreStatement :: Parser ()
 ignoreStatement = do
@@ -26,10 +38,11 @@ ignoreStatement = do
           , createTrigger
           , createIndex
           , begin
+          , commit
+          , rollback
           ]
   return ()
   where
-    begin = void $ lexeme (string "begin") *> takeWhile1P Nothing (/= ';')
     insertStatement = void $ lexeme (string "insert") *> takeWhile1P Nothing (/= ';')
     createFunction = do
       _ <- lexeme (string "create")
