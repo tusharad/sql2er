@@ -29,10 +29,10 @@ tableDiagram (Table name cols _) = do
 
 decideTableWidth :: Int -> Int
 decideTableWidth n 
-    | n <= 8 = 5
-    | n >= 9 && n <= 12 = 7
-    | n >= 13 && n <= 17 = 10
-    | otherwise = 12
+    | n <= 8 = 8
+    | n >= 9 && n <= 12 = 10
+    | n >= 13 && n <= 17 = 12
+    | otherwise = 14
 
 renderErDiagram :: FilePath -> Double -> Double -> [Table] -> IO ()
 renderErDiagram outputFilePath width_ height_ tableList = do
