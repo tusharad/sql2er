@@ -13,8 +13,45 @@ simpleTable1String =
   \did         integer NOT NULL,\
   \date_prod   date,\
   \kind        varchar(10),\
-  \len         interval hour to minute\
   \);"
+
+uniqueConstraint :: Table
+uniqueConstraint =
+  Table
+    { tableName = "x"
+    , columns =
+        [ Column
+            { columnName = "y"
+            , columnType = PGvarchar (Just 3)
+            , cConstraints = [Unique]
+            }
+        , Column
+            { columnName = "z"
+            , columnType = PGinteger
+            , cConstraints = []
+            }
+        ]
+    , tableConstraints = [UniqueConstraint ["z"]]
+    }
+
+columnNullNotNull :: Table
+columnNullNotNull =
+  Table
+    { tableName = "x"
+    , columns =
+        [ Column
+            { columnName = "y"
+            , columnType = PGvarchar (Just 3)
+            , cConstraints = [NotNull]
+            }
+        , Column
+            { columnName = "z"
+            , columnType = PGinteger
+            , cConstraints = [Null]
+            }
+        ]
+    , tableConstraints = []
+    }
 
 constraintNamePK :: Table
 constraintNamePK =
@@ -23,7 +60,7 @@ constraintNamePK =
     , columns =
         [ Column
             { columnName = "y"
-            , columnType = PGinteger
+            , columnType = PGvarchar (Just 3)
             , cConstraints = [PrimaryKey]
             }
         , Column

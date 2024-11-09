@@ -74,6 +74,10 @@ stack run -- test.sql -o erd.svg
 - [ ] Add Additional Examples
 - [ ] Add more parsing functions
 - [ ] Add more documentation
+- [x] Adding test cases
+- [ ] Adding support for interval data type
+- [x] GENERATED constraint
+- [ ] Parse 2D array
 
 See the [open issues](https://github.com/tusharad/sql2er/issues) for a full list of proposed features (and known issues).
 
@@ -93,7 +97,7 @@ See the [open issues](https://github.com/tusharad/sql2er/issues) for a full list
 - tablespace
 - not valid
 - validate
-- begin/commit
+- interval data type
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments

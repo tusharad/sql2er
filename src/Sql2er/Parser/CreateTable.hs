@@ -29,6 +29,7 @@ parseColumn = do
                     , parseReferenceForCol
                     , parseNullForCol 
                     ]))
+  void $ optional ignoreConstraints
   return
     Column
       { columnName = cName

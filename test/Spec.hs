@@ -6,12 +6,24 @@ import Data.Text qualified as T
 import Data.Text.IO qualified as T
 import ExamplesForTests
 import ExamplesForTests qualified as Ex
+import Sql2er.Common.Types
 import Sql2er.Common.Utils (begin, commit, rollback)
 import Sql2er.Parser
 import Sql2er.Parser.CreateTable (parseCreateTable)
 import Test.Tasty
 import Test.Tasty.HUnit
 import Text.Megaparsec
+
+testParse :: Text -> Parser Table -> Table -> String -> Assertion
+testParse inputText parsingFunc expectedOp failureMsg = do
+  let eRes =
+        runParser
+          parsingFunc
+          ""
+          inputText
+  case eRes of
+    Left _ -> assertFailure failureMsg
+    Right r -> expectedOp @=? r
 
 testBeginCommit :: TestTree
 testBeginCommit =
@@ -47,19 +59,36 @@ testColumnConstraint :: TestTree
 testColumnConstraint =
   testGroup
     "column constraints"
-    [ testCase "column with constraint name" $ do
-        let eRes =
-              runParser
-                parseCreateTable
-                ""
+    [ testCase "column with constraint name" $
+        testParse
+           ( T.toLower
+            "create or replace \
+            \table x (y varchar(3) CONSTRAINT \
+            \cName primary key, z int)")
+            parseCreateTable
+            Ex.constraintNamePK
+            "parsing failed for column constraint"
+    , testCase "column with Null and Not Null constraints" $
+        testParse
                 ( T.toLower
                     "create or replace \
-                    \table x (y int CONSTRAINT \
-                    \cName primary key, z int)"
+                    \table x (y varchar(3) Not NULL\
+                    \, z int NULL)"
                 )
-        case eRes of
-          Left _ -> assertFailure "parsing failed for column constraint"
-          Right r -> Ex.constraintNamePK @=? r
+                parseCreateTable
+                Ex.columnNullNotNull
+                "parsing failed for column NULL, not NULL"
+    , testCase "column with unique constraint" $
+        testParse
+          ( T.toLower
+              "create or replace \
+              \table x (y varchar(3) unique\
+              \, z int\
+              \, constraint zUnique unique (z))"
+          )
+          parseCreateTable
+          Ex.uniqueConstraint 
+          "parsing failed for unique column constraint"
     ]
 
 createStatementTests :: TestTree

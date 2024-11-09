@@ -30,7 +30,7 @@ data SqlType
   | PGboolean
   | PGbox
   | PGbytea
-  | PGchar
+  | PGchar (Maybe Int)
   | PGvarchar (Maybe Int)
   | PGdate
   | PGinteger

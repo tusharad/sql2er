@@ -119,6 +119,13 @@ parseReferenceForCol = do
           *> takeWhile1P Nothing (`notElem` (" \t\n;,)" :: String))
   return (ReferencesColumn refTable refCol)
 
+ignoreConstraints :: Parser ()
+ignoreConstraints = do
+  _ <-
+    lexeme (string "generated")
+      *> lexeme (takeWhile1P Nothing (`notElem` (",);" :: String)))
+  return ()
+
 parseSqlType :: Parser SqlType
 parseSqlType =
   choice $
@@ -134,9 +141,13 @@ parseSqlType =
           , PGbytea
               <$ string "bytea"
           , PGchar
-              <$ string "char"
+              <$> ( string "char"
+                      *> optional (space *> lexeme (char '(') *> decimal <* char ')')
+                  )
           , PGvarchar
-              <$> (string "varchar" *> optional (space *> lexeme (char '(') *> decimal <* char ')'))
+              <$> ( string "varchar"
+                      *> optional (space *> lexeme (char '(') *> decimal <* char ')')
+                  )
           , PGdate
               <$ string "date"
           , PGinteger
