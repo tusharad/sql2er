@@ -57,7 +57,6 @@ data Column = Column
   { columnName :: ColumnName
   , columnType :: SqlType
   , cConstraints :: [ColumnConstraint]
-  , tConstraints :: [Text]
   }
   deriving (Show, Eq)
 

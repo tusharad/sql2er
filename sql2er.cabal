@@ -74,6 +74,7 @@ test-suite sql2er-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      ExamplesForTests
       Paths_sql2er
   hs-source-dirs:
       test

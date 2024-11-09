@@ -17,7 +17,7 @@ tableDiagram (Table name cols _) = do
     findLongestStringLength n1 = helper (T.length n1) 
     helper maxCount [] = maxCount
     helper maxCount (c:cs) = helper (max maxCount (T.length $ columnName c)) cs
-    columnDiagram colWidth (Column cname _ constraints _) =
+    columnDiagram colWidth (Column cname _ constraints) =
       let cText = T.unpack cname ++ concatMap showConstraint constraints
        in text cText <> rect colWidth 1.8 # fc yellow
     showConstraint PrimaryKey = " (PK)"

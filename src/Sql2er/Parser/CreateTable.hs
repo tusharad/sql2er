@@ -21,13 +21,19 @@ parseColumn = do
                     , parseReferenceForCol
                     , parseNullForCol 
                     ]
-  t <- many (string "constraint" *> takeWhile1P Nothing (/= ','))
+  t <- many (lexeme (string "constraint") *> parseWordAndComma *> choice (try <$> [
+                      parsePrimaryKeyForCol
+                    , parseNotNullForCol
+                    , parseUniqueForCol
+                    , parseDefaultVForCol
+                    , parseReferenceForCol
+                    , parseNullForCol 
+                    ]))
   return
     Column
       { columnName = cName
       , columnType = sqlType
-      , cConstraints = c
-      , tConstraints = t
+      , cConstraints = c <> t
       }
 
 -- Helper parsers for skipping unwanted parts

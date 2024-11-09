@@ -52,14 +52,20 @@ parseAddColumn = do
                     , parseReferenceForCol
                     , parseNullForCol 
                     ]
-  t <- many (string "constraint" *> takeWhile1P Nothing (/= ','))
+  t <- many (string "constraint" *> parseWordAndComma *> choice (try <$> [
+                      parsePrimaryKeyForCol
+                    , parseNotNullForCol
+                    , parseUniqueForCol
+                    , parseDefaultVForCol
+                    , parseReferenceForCol
+                    , parseNullForCol 
+                    ]))
   return $
     AddColumn $
       Column
         { columnName = colName
         , columnType = dataType
-        , cConstraints = c
-        , tConstraints = t
+        , cConstraints = c <> t
         }
 
 parseDropColumn :: Parser AlterTableAction
