@@ -64,7 +64,7 @@ skipLikeClause = do
 
 skipPartitioning :: Parser ()
 skipPartitioning = do
-  _ <- string "partition by"
+  _ <- lexeme (string "partition") *> lexeme (string "by")
   _ <- takeWhileP Nothing (/= ')')
   return ()
 

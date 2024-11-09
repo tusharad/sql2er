@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           sql2er
-version:        0.1.0.0
+version:        0.1.0.1
 synopsis:       A CLI tool that converts Postgres SQL file to ER-digram.
 description:    Please see the README on GitHub at <https://github.com/tusharad/sql2er#readme>
 category:       CLI

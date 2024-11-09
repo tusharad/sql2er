@@ -1,5 +1,17 @@
 BEGIN;
 
+CREATE TABLE orders (
+    order_id     bigint not null,
+    cust_id      bigint not null,
+    status       text
+) PARTITION BY HASH (order_id);
+
+CREATE TABLE cities (
+    city_id      bigserial not null,
+    name         text not null,
+    population   bigint
+) PARTITION BY LIST (left(lower(name), 1));
+
 CREATE TABLE emails (
   email_record_id SERIAL PRIMARY KEY,
   sender_email VARCHAR(50) NOT NULL,
