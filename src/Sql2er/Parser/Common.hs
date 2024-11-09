@@ -24,7 +24,8 @@ parseWordForAlter = lexeme (takeWhile1P Nothing (`notElem` (" \t\n;," :: String)
 
 parseDefaultValue :: Parser Text
 parseDefaultValue =
-  lexeme (char '\'' *> takeWhile1P Nothing (/= '\'') <* char '\'') <|> parseWordWithoutParenthesis
+  lexeme (char '\'' *> takeWhile1P Nothing (/= '\'') <* char '\'')
+    <|> parseWordWithoutParenthesis
 
 parseTableConstraint :: Parser TableConstraint
 parseTableConstraint = do
@@ -45,25 +46,26 @@ uniqueConstraint = do
     between
       (char '(')
       (char ')')
-      ( lexeme
-          ( takeWhile1P
-              Nothing
-              (`notElem` (" \t\n;,)" :: String))
-          )
-          `sepBy1` lexeme (char ',')
-      )
+      ( lexeme $
+          (lexeme $ takeWhile1P Nothing (`notElem` (",)" :: String)))  
+            `sepBy` lexeme (char ',')
+        )
   return $ UniqueConstraint cols
 
 primaryKeyConstraint :: Parser TableConstraint
 primaryKeyConstraint = do
   _ <- lexeme (string "primary") *> lexeme (string "key")
-  col <- between (char '(') (char ')') (takeWhile1P Nothing (/= ')'))
+  col <- between (lexeme $ char '(') (lexeme $ char ')') (takeWhile1P Nothing (/= ')'))
   return $ PrimaryKeyConstraint col
 
 checkConstraint :: Parser TableConstraint
 checkConstraint = do
   _ <- lexeme (string "check")
-  expr <- lexeme (takeWhile1P Nothing (`notElem` (";," :: String)))
+  expr <-
+    lexeme (char '(')
+      *> lexeme (takeWhile1P Nothing (/= ')'))
+      <* lexeme (char ')')
+  _ <- optional $ lexeme (string "no") *> lexeme (string "inherit")
   return $ CheckConstraint expr
 
 foreignKeyConstraint :: Parser TableConstraint
@@ -72,7 +74,19 @@ foreignKeyConstraint = do
   col <- between (lexeme (char '(')) (lexeme (char ')')) (takeWhile1P Nothing (/= ')'))
   _ <- lexeme (string "references")
   refTable <- parseWord
-  refColumn <- optional (between (char '(') (char ')') (takeWhile1P Nothing (/= ')')))
+  refColumn <-
+    optional
+      ( between
+          (lexeme $ char '(')
+          (lexeme $ char ')')
+          (takeWhile1P Nothing (/= ')'))
+      )
+  _ <-
+    try $
+      optional $
+        lexeme (string "on")
+          *> (lexeme (string "delete") <|> lexeme (string "update"))
+          *> lexeme (string "cascade")
   return $ ForeignKeyConstraint col refTable refColumn
 
 excludeConstraint :: Parser TableConstraint
@@ -90,6 +104,16 @@ parseDefaultVal =
       <|> (char '\'' *> takeWhile1P Nothing (/= '\'') <* char '\'')
       <|> (char '\'' *> takeWhile1P Nothing (/= '\"') <* char '\"')
       <|> takeWhile1P Nothing (`notElem` (" " :: String))
+
+parseCheckForCol :: Parser ColumnConstraint
+parseCheckForCol = do
+  _ <- lexeme (string "check")
+  expr <-
+    lexeme (char '(')
+      *> lexeme (takeWhile1P Nothing (/= ')'))
+      <* lexeme (char ')')
+  _ <- optional $ lexeme (string "no") *> lexeme (string "inherit")
+  return $ Check expr
 
 parsePrimaryKeyForCol :: Parser ColumnConstraint
 parsePrimaryKeyForCol = PrimaryKey <$ (lexeme (string "primary") *> lexeme (string "key"))
@@ -110,7 +134,12 @@ parseReferenceForCol :: Parser ColumnConstraint
 parseReferenceForCol = do
   _ <- lexeme (string "references")
   refTable <- parseWord
-  refCol <- optional (lexeme (char '(') *> lexeme (takeWhile1P Nothing (/= ')')) <* lexeme (char ')'))
+  refCol <-
+    optional
+      ( lexeme (char '(')
+          *> lexeme (takeWhile1P Nothing (/= ')'))
+          <* lexeme (char ')')
+      )
   _ <-
     try $
       optional $
@@ -161,6 +190,10 @@ parseSqlType =
           , PGtimestamptz <$ lexeme (string "timestamptz")
           , PGtimestamp
               <$ lexeme (string "timestamp")
-              <* optional (lexeme (string "without") *> lexeme (string "time") *> lexeme (string "zone"))
+              <* optional
+                ( lexeme (string "without")
+                    *> lexeme (string "time")
+                    *> lexeme (string "zone")
+                )
           , SomeType <$ lexeme (takeWhile1P Nothing (/= ' '))
           ]

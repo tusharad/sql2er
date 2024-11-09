@@ -20,6 +20,7 @@ parseColumn = do
                     , parseDefaultVForCol
                     , parseReferenceForCol
                     , parseNullForCol 
+                    , parseCheckForCol
                     ]
   t <- many (lexeme (string "constraint") *> parseWordAndComma *> choice (try <$> [
                       parsePrimaryKeyForCol
@@ -28,6 +29,7 @@ parseColumn = do
                     , parseDefaultVForCol
                     , parseReferenceForCol
                     , parseNullForCol 
+                    , parseCheckForCol
                     ]))
   void $ optional ignoreConstraints
   return
@@ -107,9 +109,8 @@ parseCreateTable = do
   _ <- optional (try (string "global") <|> try (string "local"))
   _ <- optional (string "temporary" <|> string "temp")
   _ <- optional (string "unlogged")
-  _ <- optional $ lexeme (string "or") *> lexeme (string "replace")
   _ <- lexeme (string "table")
-  _ <- optional (string "if not exists")
+  _ <- optional $ lexeme (string "if") *> lexeme (string "not") *> lexeme (string "exists")
   tName <- lexeme (takeWhile1P Nothing (`notElem` (" \t\n)(" :: String)))
   items <-
     between (lexeme (char '(')) (lexeme (char ')')) (parseColumnOrConstraint `sepBy` lexeme (char ','))

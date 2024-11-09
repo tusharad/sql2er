@@ -51,6 +51,7 @@ parseAddColumn = do
                     , parseDefaultVForCol
                     , parseReferenceForCol
                     , parseNullForCol 
+                    , parseCheckForCol
                     ]
   t <- many (string "constraint" *> parseWordAndComma *> choice (try <$> [
                       parsePrimaryKeyForCol
@@ -59,6 +60,7 @@ parseAddColumn = do
                     , parseDefaultVForCol
                     , parseReferenceForCol
                     , parseNullForCol 
+                    , parseCheckForCol
                     ]))
   return $
     AddColumn $

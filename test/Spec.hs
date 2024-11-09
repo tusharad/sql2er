@@ -21,6 +21,7 @@ testParse inputText parsingFunc expectedOp failureMsg = do
           parsingFunc
           ""
           inputText
+  print eRes
   case eRes of
     Left _ -> assertFailure failureMsg
     Right r -> expectedOp @=? r
@@ -49,10 +50,10 @@ ignoreStatementTests =
 
 testCreateOrReplaceTable :: TestTree
 testCreateOrReplaceTable =
-  testCase "test create or replace table statement" $ do
-    let eRes = runParser parseCreateTable "" (T.toLower "create or replace table x (y int)")
+  testCase "test create table if not exists statement" $ do
+    let eRes = runParser parseCreateTable "" (T.toLower "create table if not exists x (y int)")
     case eRes of
-      Left _ -> assertFailure "parsing failed for create or replace"
+      Left _ -> assertFailure "parsing failed for create if not exist"
       Right r -> simpleTable0 @=? r
 
 testColumnConstraint :: TestTree
@@ -62,8 +63,8 @@ testColumnConstraint =
     [ testCase "column with constraint name" $
         testParse
            ( T.toLower
-            "create or replace \
-            \table x (y varchar(3) CONSTRAINT \
+            "create \
+            \table if not exists x (y varchar(3) CONSTRAINT \
             \cName primary key, z int)")
             parseCreateTable
             Ex.constraintNamePK
@@ -71,8 +72,8 @@ testColumnConstraint =
     , testCase "column with Null and Not Null constraints" $
         testParse
                 ( T.toLower
-                    "create or replace \
-                    \table x (y varchar(3) Not NULL\
+                    "create \
+                    \table if not exists x (y varchar(3) Not NULL\
                     \, z int NULL)"
                 )
                 parseCreateTable
@@ -81,8 +82,8 @@ testColumnConstraint =
     , testCase "column with unique constraint" $
         testParse
           ( T.toLower
-              "create or replace \
-              \table x (y varchar(3) unique\
+              "create \
+              \table if not exists x (y varchar(3) unique\
               \, z int\
               \, constraint zUnique unique (z))"
           )
@@ -91,12 +92,41 @@ testColumnConstraint =
           "parsing failed for unique column constraint"
     ]
 
+{-
+"create table if not exists x (y varchar(3) unique\
+              \, z int, constraint zunique unique (z),\
+              \constraint asd primary key (y), constraint fKey foreign key (z) references\
+              \sometable (z) on update cascade, check (z > 23),\
+              \constraint uniquex unique (y))"
+
+-}
+
+testTableConstraint :: TestTree
+testTableConstraint =
+    testGroup 
+        "table constraints" 
+    [
+        testCase "table constraints" $
+            testParse
+           ( T.toLower
+              "create table if not exists x (y varchar(3) unique\
+              \, z int, constraint zunique unique (z),\
+              \constraint asd primary key (y), constraint fKey foreign key (z) references\
+              \ sometable (z) on update cascade, check (z > 23),\
+              \constraint uniquex unique (y,z))"
+          )
+          parseCreateTable
+          Ex.tableConstraint
+          "Parsing failed for table constraints" 
+    ]
+
 createStatementTests :: TestTree
 createStatementTests =
   testGroup
     "Create statement tests"
     [ testCreateOrReplaceTable
     , testColumnConstraint
+    , testTableConstraint
     ]
 
 testSqlScripts :: Text -> TestTree

@@ -5,9 +5,30 @@ module ExamplesForTests where
 import Data.Text (Text)
 import Sql2er.Common.Types
 
+tableConstraint :: Table
+tableConstraint =
+  Table
+    { tableName = "x"
+    , columns =
+        [ Column
+            { columnName = "y"
+            , columnType = PGvarchar (Just 3)
+            , cConstraints = [Unique]
+            }
+        , Column {columnName = "z", columnType = PGinteger, cConstraints = []}
+        ]
+    , tableConstraints =
+        [ UniqueConstraint ["z"]
+        , PrimaryKeyConstraint "y"
+        , ForeignKeyConstraint "z" "sometable" (Just "z")
+        , CheckConstraint "z > 23"
+        , UniqueConstraint ["y","z"]
+        ]
+    }
+
 simpleTable1String :: Text
 simpleTable1String =
-  "CREATE or replace TABLE films (\n\
+  "CREATE TABLE films (\n\
   \code        char(5) CONSTRAINT firstkey PRIMARY KEY,\
   \title       varchar(40) NOT NULL,\
   \did         integer NOT NULL,\

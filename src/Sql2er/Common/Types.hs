@@ -51,6 +51,7 @@ data ColumnConstraint =
     | Null
     | Default Text
     | ReferencesColumn TableName (Maybe ColumnName)
+    | Check Text
     deriving (Show, Eq)
 
 data Column = Column
