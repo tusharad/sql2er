@@ -195,5 +195,7 @@ parseSqlType =
                     *> lexeme (string "time")
                     *> lexeme (string "zone")
                 )
+          , PGbigInt <$ string "bigint"
+          , PGBigSerial <$ string "bigserial"
           , SomeType <$ lexeme (takeWhile1P Nothing (/= ' '))
           ]

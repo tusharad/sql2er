@@ -1,16 +1,10 @@
 BEGIN;
 
-CREATE TABLE orders (
-    order_id     bigint not null,
-    cust_id      bigint not null,
-    status       text
-);
-
 CREATE TABLE cities (
-    city_id      bigserial not null,
+    city_id      int not null,
     name         text not null,
     population   bigint
-) PARTITION BY LIST (left(lower(name), 1));
+) partition by (logdate);
 
 CREATE TABLE emails (
   email_record_id SERIAL PRIMARY KEY,

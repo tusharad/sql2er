@@ -5,6 +5,22 @@ module ExamplesForTests where
 import Data.Text (Text)
 import Sql2er.Common.Types
 
+partitionConstraint :: Table
+partitionConstraint =
+  Table
+    { tableName = "cities"
+    , columns =
+        [ Column
+            { columnName = "city_id"
+            , columnType = PGinteger
+            , cConstraints = [NotNull]
+            }
+        , Column {columnName = "name", columnType = PGtext, cConstraints = [NotNull]}
+        , Column {columnName = "population", columnType = PGbigInt, cConstraints = []}
+        ]
+    , tableConstraints = []
+    }
+
 tableConstraint :: Table
 tableConstraint =
   Table
@@ -22,7 +38,7 @@ tableConstraint =
         , PrimaryKeyConstraint "y"
         , ForeignKeyConstraint "z" "sometable" (Just "z")
         , CheckConstraint "z > 23"
-        , UniqueConstraint ["y","z"]
+        , UniqueConstraint ["y", "z"]
         ]
     }
 

@@ -40,6 +40,7 @@ data SqlType
   | PGint
   | PGtimestamp
   | PGtimestamptz
+  | PGBigSerial
   | SomeType
   deriving (Show, Eq)
 

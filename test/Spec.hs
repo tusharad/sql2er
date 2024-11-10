@@ -21,7 +21,6 @@ testParse inputText parsingFunc expectedOp failureMsg = do
           parsingFunc
           ""
           inputText
-  print eRes
   case eRes of
     Left _ -> assertFailure failureMsg
     Right r -> expectedOp @=? r
@@ -120,6 +119,23 @@ testTableConstraint =
           "Parsing failed for table constraints" 
     ]
 
+testPartitionConstraint :: TestTree
+testPartitionConstraint =
+    testGroup "partition constraint" [
+        testCase "paition with multiple parenthesis" $
+            testParse
+            (T.toLower
+                "CREATE TABLE cities (\
+    \city_id      int not null,\
+    \name         text not null,\
+    \population   bigint\
+    \) PARTITION BY LIST (left(lower(name), 1))"
+            )
+            parseCreateTable
+            Ex.partitionConstraint
+            "Parsing failed for table with partition"
+    ]
+
 createStatementTests :: TestTree
 createStatementTests =
   testGroup
@@ -127,12 +143,14 @@ createStatementTests =
     [ testCreateOrReplaceTable
     , testColumnConstraint
     , testTableConstraint
+    , testPartitionConstraint
     ]
 
 testSqlScripts :: Text -> TestTree
 testSqlScripts t = do
   let eRes = runParser parseSqlScript "" t
-  testCase "parsing script" (assertBool "" (isRight eRes))
+  testCase "parsing script" $ do 
+    assertBool "" (isRight eRes)
 
 main :: IO ()
 main = do

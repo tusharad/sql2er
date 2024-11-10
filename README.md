@@ -78,7 +78,8 @@ stack run -- test.sql -o erd.svg
 - [ ] Adding support for interval data type
 - [x] GENERATED constraint
 - [ ] Parse 2D array
-- [ ] Gracefully ignore partition.
+- [x] Gracefully ignore partition.
+- [ ] bigserial
 
 See the [open issues](https://github.com/tusharad/sql2er/issues) for a full list of proposed features (and known issues).
 

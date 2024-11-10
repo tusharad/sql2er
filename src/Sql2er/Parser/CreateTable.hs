@@ -13,24 +13,34 @@ parseColumn :: Parser Column
 parseColumn = do
   cName <- parseWordAndComma
   sqlType <- lexeme parseSqlType
-  c <- many $ choice $ try <$> [
-                      parsePrimaryKeyForCol
+  c <-
+    many $
+      choice $
+        try
+          <$> [ parsePrimaryKeyForCol
+              , parseNotNullForCol
+              , parseUniqueForCol
+              , parseDefaultVForCol
+              , parseReferenceForCol
+              , parseNullForCol
+              , parseCheckForCol
+              ]
+  t <-
+    many
+      ( lexeme (string "constraint")
+          *> parseWordAndComma
+          *> choice
+            ( try
+                <$> [ parsePrimaryKeyForCol
                     , parseNotNullForCol
                     , parseUniqueForCol
                     , parseDefaultVForCol
                     , parseReferenceForCol
-                    , parseNullForCol 
+                    , parseNullForCol
                     , parseCheckForCol
                     ]
-  t <- many (lexeme (string "constraint") *> parseWordAndComma *> choice (try <$> [
-                      parsePrimaryKeyForCol
-                    , parseNotNullForCol
-                    , parseUniqueForCol
-                    , parseDefaultVForCol
-                    , parseReferenceForCol
-                    , parseNullForCol 
-                    , parseCheckForCol
-                    ]))
+            )
+      )
   void $ optional ignoreConstraints
   return
     Column
@@ -57,27 +67,26 @@ skipOptionalParts =
 
 skipLikeClause :: Parser ()
 skipLikeClause = do
-  _ <- string "like"
-  _ <- parseWord
-  _ <- optional (between (char '(') (char ')') (skipManyTill anySingle (lookAhead (char ')'))))
+  _ <- lexeme $ string "like"
+  _ <- takeWhile1P Nothing (/= ';')
   return ()
 
 skipPartitioning :: Parser ()
 skipPartitioning = do
   _ <- lexeme (string "partition") *> lexeme (string "by")
-  _ <- takeWhileP Nothing (/= ')')
+  _ <- takeWhile1P Nothing (/= ';')
   return ()
 
 skipInheritsClause :: Parser ()
 skipInheritsClause = do
-  _ <- string "inherits"
-  _ <- between (char '(') (char ')') (parseWord `sepBy1` lexeme (char ','))
+  _ <- lexeme $ string "inherits"
+  _ <- takeWhile1P Nothing (/= ';')
   return ()
 
 skipUsingMethod :: Parser ()
 skipUsingMethod = do
-  _ <- string "using"
-  _ <- parseWord
+  _ <- lexeme $ string "using"
+  _ <- takeWhile1P Nothing (/= ';')
   return ()
 
 skipWithOrWithoutOids :: Parser ()
@@ -96,12 +105,14 @@ skipOnCommit = do
 
 skipTablespace :: Parser ()
 skipTablespace = do
-  _ <- string "tablespace"
-  _ <- parseWord
+  _ <- lexeme $ string "tablespace"
+  _ <- takeWhile1P Nothing (/= ';')
   return ()
 
 parseColumnOrConstraint :: Parser (Either Column TableConstraint)
-parseColumnOrConstraint = (Right <$> lexeme parseTableConstraint) <|> (Left <$> lexeme parseColumn) 
+parseColumnOrConstraint =
+  (Right <$> lexeme parseTableConstraint)
+    <|> (Left <$> lexeme parseColumn)
 
 parseCreateTable :: Parser Table
 parseCreateTable = do
@@ -113,8 +124,11 @@ parseCreateTable = do
   _ <- optional $ lexeme (string "if") *> lexeme (string "not") *> lexeme (string "exists")
   tName <- lexeme (takeWhile1P Nothing (`notElem` (" \t\n)(" :: String)))
   items <-
-    between (lexeme (char '(')) (lexeme (char ')')) (parseColumnOrConstraint `sepBy` lexeme (char ','))
-  _ <- optional skipOptionalParts
+    between
+      (lexeme (char '('))
+      (lexeme (char ')'))
+      (parseColumnOrConstraint `sepBy` lexeme (char ','))
+  _ <- optional $ lexeme skipOptionalParts
   let cols = [c | Left c <- items]
   let constraints = [con | Right con <- items]
   return Table {tableName = tName, columns = cols, tableConstraints = constraints}
