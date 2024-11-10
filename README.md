@@ -1,115 +1,165 @@
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![Contributors][contributors-shield]][contributors-url]  
+[![Forks][forks-shield]][forks-url]  
+[![Stargazers][stars-shield]][stars-url]  
+[![Issues][issues-shield]][issues-url]  
+[![MIT License][license-shield]][license-url]  
+[![LinkedIn][linkedin-shield]][linkedin-url]  
 
 <!-- PROJECT LOGO -->
-<br />
-<div align="center">
+<div align="center" id="readme-top">
   <a href="https://github.com/tusharad/sql2er">
     <img src="example/logo.jpeg" alt="Logo" width="180" height="180">
   </a>
 
-  <h3 align="center">SQL 2 ER</h3>
+  <h1 align="center">SQL 2 ER</h1>
 
   <p align="center">
-    SQL2ER is a command line tool that takes SQL script as input and generates an ER diagram. The parser is written to adopt PostgreSQL syntax.
-    <a href="https://github.com/tusharad/sql2er/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    A command-line tool to convert SQL scripts into Entity-Relationship (ER) diagrams.
+    <br>
+    Designed to work with PostgreSQL syntax.
+    <br>
+    <a href="https://github.com/tusharad/sql2er/issues/new?labels=bug&template=bug-report---.md"><strong>Report a Bug</strong></a>
     ·
-    <a href="https://github.com/tusharad/sql2er/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/tusharad/sql2er/issues/new?labels=enhancement&template=feature-request---.md"><strong>Request a Feature</strong></a>
   </p>
 </div>
 
-### Example
+---
 
-test.sql
+## Table of Contents
+
+- [Example](#example)  
+- [Getting Started](#getting-started)  
+- [Built With](#built-with)  
+- [Roadmap](#roadmap)  
+- [Limitations](#limitations)  
+- [Unsupported Features](#unsupported-features)  
+- [Acknowledgments](#acknowledgments)
+
+---
+
+## Example
+
+**Input: `test.sql`**
 
 ```sql
-create table department (dep_id serial primary key, dep_name varchar(30), createAt timestamptz default now());
-create table employee ( employee_id serial primary key, employee_name varchar(30), employee_age int, 
-    dep_id int references department (dep_id) on delete cascade, createAt timestamptz default now());
-create table tasks (task_id int, task_name text);
+CREATE TABLE department (
+    dep_id SERIAL PRIMARY KEY, 
+    dep_name VARCHAR(30), 
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE employee (
+    employee_id SERIAL PRIMARY KEY, 
+    employee_name VARCHAR(30), 
+    employee_age INT, 
+    dep_id INT REFERENCES department (dep_id) ON DELETE CASCADE, 
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE tasks (
+    task_id INT, 
+    task_name TEXT
+);
 ```
+
+**Command:**
 
 ```bash
 ./sql2er-exe test.sql -o erd.svg
 ```
 
-#### Output
+**Output:**
 
-<img src="example/erd.svg" alt="Logo" width="100%" height="580">
+<img src="example/erd.svg" alt="ER Diagram" width="100%" height="580">
+
+---
 
 ## Getting Started
 
-Here are 2 ways to use this tool
+### Option 1: Download Binary
 
-1. Download the binary from release and simply run it.
+1. Download the binary from the [Releases](https://github.com/tusharad/sql2er/releases) page.
+2. Run the tool:
 
-```bash
-./sql2er-exe test.sql -o erd.svg
-```
+    ```bash
+    ./sql2er-exe test.sql -o erd.svg
+    ```
 
-2. Build from source:
+### Option 2: Build from Source
 
-You can download [stack](https://docs.haskellstack.org/en/stable/) via [GHCup](https://www.haskell.org/ghcup/).
+1. Install [Stack](https://docs.haskellstack.org/en/stable/) via [GHCup](https://www.haskell.org/ghcup/).
+2. Clone the repository and navigate to the project root.
+3. Build and run the project:
 
-then simply build and run using below command from the root directory of the project.
+    ```bash
+    stack run -- test.sql -o erd.svg
+    ```
 
-```
-stack run -- test.sql -o erd.svg
-```
+---
 
-### Built With
+## Built With
 
 [![Haskell][Haskell]][Haskell-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- ROADMAP -->
+---
+
 ## Roadmap
 
-- [x] Add Changelog
-- [ ] Add Additional Examples
-- [ ] Add more parsing functions
-- [ ] Add more documentation
-- [x] Adding test cases
-- [ ] Adding support for interval data type
-- [x] GENERATED constraint
-- [ ] Parse 2D array
-- [x] Gracefully ignore partition.
-- [ ] bigserial
+- [x] Add Changelog  
+- [x] Add Test Cases  
+- [x] Support `GENERATED` Constraint  
+- [x] Gracefully Ignore Partitions  
+- [x] Support `bigserial`  
+- [ ] Add Additional Examples  
+- [ ] Enhance Documentation  
+- [ ] Add More Parsing Functions  
+- [ ] Support Interval Data Type  
+- [ ] Support 2D Arrays  
 
-See the [open issues](https://github.com/tusharad/sql2er/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-### Limitations:
-- The parser is not smart enough to find syntactical errors in the SQL. It will only extract neccecary information for it to generate an ERD.
-- ForeignKeyConstraint can only handle a single column and not a list of column.
-- The tool is mainly tested and is following postgres version 17 documentation.
-- Not able to parse (to ignore) `Create function` statements. If it came across `create function` statement, it will take rest and stop parsing.
+For the full list of proposed features and known issues, check out the [open issues](https://github.com/tusharad/sql2er/issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### does not support:
-- detach
-- using ...
-- tablespace
-- not valid
-- validate
-- interval data type
+---
 
-<!-- ACKNOWLEDGMENTS -->
+## Limitations
+
+- **Syntax Validation:**  
+  The parser doesn't validate SQL syntax; it extracts only the necessary information for generating ER diagrams.  
+- **Foreign Key Constraints:**  
+  Currently supports single-column foreign keys only.  
+- **PostgreSQL Specific:**  
+  Designed and tested using PostgreSQL 17.  
+- **Function Parsing:**  
+  Parsing stops at `CREATE FUNCTION` statements.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+---
+
+## Unsupported Features
+
+- `DETACH`  
+- `USING ...`  
+- `TABLESPACE`  
+- `NOT VALID`  
+- `VALIDATE`  
+- `INTERVAL` Data Type  
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+---
+
 ## Acknowledgments
 
-- This tool is inspired by [sqldiagram](https://github.com/RadhiFadlillah/sqldiagram) but the tool was created for MySQL and the parser was weak.
+This project was inspired by [sqldiagram](https://github.com/RadhiFadlillah/sqldiagram), which focuses on MySQL but lacked robust parsing capabilities.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/tusharad/sql2er.svg?style=for-the-badge
 [contributors-url]: https://github.com/tusharad/sql2er/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/tusharad/sql2er.svg?style=for-the-badge
