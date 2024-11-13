@@ -41,6 +41,12 @@ library:
   default-extensions:
     - ImportQualifiedPost
 
+flags:
+  build-sql2er-wasm:
+    description: Build the sql2er WASM app
+    manual: true
+    default: false
+
 executables:
   sql2er-exe:
     main:                Main.hs
@@ -63,6 +69,12 @@ executables:
       - "-optl-Wl,--export=hs_init,--export=hs_runWorker,--export=freeBuffer,--export=callocBuffer"
     dependencies:
       - sql2er
+    when:
+      - condition: flag(build-sql2er-wasm)
+        then:
+          buildable: true
+        else:
+          buildable: false
 
 tests:
   sql2er-test:

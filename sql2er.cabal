@@ -25,6 +25,11 @@ source-repository head
   type: git
   location: https://github.com/tusharad/sql2er
 
+flag build-sql2er-wasm
+  description: Build the sql2er WASM app
+  manual: True
+  default: False
+
 library
   exposed-modules:
       Sql2er.CmdArgs
@@ -83,6 +88,10 @@ executable sql2er-wasm
     , sql2er
     , text
   default-language: Haskell2010
+  if flag(build-sql2er-wasm)
+    buildable: True
+  else
+    buildable: False
 
 test-suite sql2er-test
   type: exitcode-stdio-1.0

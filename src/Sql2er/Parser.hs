@@ -3,7 +3,6 @@ module Sql2er.Parser (parseSql, parseSqlScript, parseScript, postParsingSetup) w
 
 import Data.List (find)
 import Data.Maybe
-import Data.Text (Text)
 import Data.Text qualified as T
 import Sql2er.Common.Types
 import Sql2er.Common.Utils (ignoreStatement, lexeme)

@@ -93,7 +93,7 @@ CREATE TABLE tasks (
 3. Build the binary for linux:
 
     ```bash
-    stack build :sql2er-exe
+    stack build
     cp $(stack path --local-install-root)/bin/sql2er-exe .
     ./sql2er-exe test.sql -o erd.svg
     ```
@@ -104,7 +104,7 @@ CREATE TABLE tasks (
 2. Make sure to download the `9.8` `FLAVOUR`.
 
 ```bash
-wasm32-wasi-cabal build sql2er-wasm
+wasm32-wasi-cabal build sql2er-wasm -f build-sql2er-wasm
 cp path/to/sql2er-wasm.wasm .
 python3 -m http.server
 ```

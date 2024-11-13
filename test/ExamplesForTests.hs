@@ -36,7 +36,7 @@ tableConstraint =
     , tableConstraints =
         [ UniqueConstraint ["z"]
         , PrimaryKeyConstraint "y"
-        , ForeignKeyConstraint "z" "sometable" (Just "z")
+        , ForeignKeyConstraint "sometable" "z" (Just "z")
         , CheckConstraint "z > 23"
         , UniqueConstraint ["y", "z"]
         ]
