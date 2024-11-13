@@ -109,7 +109,7 @@ foreignKeyConstraint = do
         lexeme (string "on")
           *> (lexeme (string "delete") <|> lexeme (string "update"))
           *> lexeme (string "cascade")
-  return $ ForeignKeyConstraint col refTable refColumn
+  return $ ForeignKeyConstraint refTable col refColumn
 
 excludeConstraint :: Parser TableConstraint
 excludeConstraint = do

@@ -60,7 +60,7 @@ executables:
     ghc-options:
       - -no-hs-main
       - -optl-mexec-model=reactor
-      - "-optl-Wl,--export=hs_runWorker"
+      - "-optl-Wl,--export=hs_init,--export=hs_runWorker,--export=freeBuffer,--export=callocBuffer"
     dependencies:
       - sql2er
 

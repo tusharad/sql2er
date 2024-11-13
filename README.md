@@ -90,11 +90,24 @@ CREATE TABLE tasks (
 
 1. Install [Stack](https://docs.haskellstack.org/en/stable/) via [GHCup](https://www.haskell.org/ghcup/).
 2. Clone the repository and navigate to the project root.
-3. Build and run the project:
+3. Build the binary for linux:
 
     ```bash
-    stack run -- test.sql -o erd.svg
+    stack build :sql2er-exe
+    cp $(stack path --local-install-root)/bin/sql2er-exe .
+    ./sql2er-exe test.sql -o erd.svg
     ```
+
+### Option 3: Build WASM
+
+1. Install `wasm32-wasi-cabal` from [here](https://gitlab.haskell.org/ghc/ghc-wasm-meta)
+2. Make sure to download the `9.8` `FLAVOUR`.
+
+```bash
+wasm32-wasi-cabal build sql2er-wasm
+cp path/to/sql2er-wasm.wasm .
+python3 -m http.server
+```
 
 ---
 

@@ -30,6 +30,7 @@ library
       Sql2er.CmdArgs
       Sql2er.Common.Types
       Sql2er.Common.Utils
+      Sql2er.Mermaid
       Sql2er.Parser
       Sql2er.Parser.AlterTable
       Sql2er.Parser.Common
@@ -74,7 +75,7 @@ executable sql2er-wasm
       Paths_sql2er
   hs-source-dirs:
       wasm
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -no-hs-main -optl-mexec-model=reactor -optl-Wl,--export=hs_runWorker
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -no-hs-main -optl-mexec-model=reactor -optl-Wl,--export=hs_init,--export=hs_runWorker,--export=freeBuffer,--export=callocBuffer
   build-depends:
       base >=4.7 && <5
     , megaparsec

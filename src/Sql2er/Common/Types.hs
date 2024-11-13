@@ -66,7 +66,7 @@ data TableConstraint
   = UniqueConstraint [ColumnName]
   | PrimaryKeyConstraint ColumnName
   | CheckConstraint Text
-  | ForeignKeyConstraint Text Text (Maybe Text)
+  | ForeignKeyConstraint TableName ColumnName (Maybe Text)
   | ExcludeConstraint Text
   deriving (Eq, Show)
 
