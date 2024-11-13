@@ -39,27 +39,25 @@ jobs:
     - name: Building wasm
       run: |
            wasm32-wasi-cabal build sql2er-wasm -f build-sql2er-wasm
+    
+    - name: Copy binary and index.html
+      run: |
+            mkdir -p artifact_dir
+            cp dist-newstyle/build/wasm32-wasi/ghc-9.8.3.20241108/sql2er-0.1.0.1/x/sql2er-wasm/opt/build/sql2er-wasm/sql2er-wasm.wasm artifact_dir/
+            cp index.html artifact_dir/
+    - name: Upload static files as artifact
+      id: deployment
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: artifact_dir/
   
   deploy:
     environment:
       name: github-pages
-      url: ${{steps.deployment.outputs.page_url}}
-    
-    runs-on: ubuntu-22.04
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Copy binary and index.html
-      - run: |
-            mkdir -p artifact_dir
-            cp $(cabal list-bin sql2er-wasm -f build-sql2er-wasm) artifact_dir/
-            cp index.html artifact_dir/
-
-      - name: Upload static files as artifact
-        id: deployment
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: artifact_dir/
-      
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
