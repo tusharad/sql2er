@@ -8,6 +8,8 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -37,3 +39,27 @@ jobs:
     - name: Building wasm
       run: |
            wasm32-wasi-cabal build sql2er-wasm -f build-sql2er-wasm
+  
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+    
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - name: Copy binary and index.html
+      - run: |
+            mkdir -p artifact_dir
+            cp $(cabal list-bin sql2er-wasm -f build-sql2er-wasm) artifact_dir/
+            cp index.html artifact_dir/
+
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifact_dir/
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
