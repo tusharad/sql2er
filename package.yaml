@@ -53,6 +53,16 @@ executables:
     - diagrams-lib
     - diagrams-svg
     - sql2er
+  
+  sql2er-wasm:
+    main: Worker.hs
+    source-dirs: wasm
+    ghc-options:
+      - -no-hs-main
+      - -optl-mexec-model=reactor
+      - "-optl-Wl,--export=hs_runWorker"
+    dependencies:
+      - sql2er
 
 tests:
   sql2er-test:

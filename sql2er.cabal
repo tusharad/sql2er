@@ -68,6 +68,21 @@ executable sql2er-exe
     , text
   default-language: Haskell2010
 
+executable sql2er-wasm
+  main-is: Worker.hs
+  other-modules:
+      Paths_sql2er
+  hs-source-dirs:
+      wasm
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -no-hs-main -optl-mexec-model=reactor -optl-Wl,--export=hs_runWorker
+  build-depends:
+      base >=4.7 && <5
+    , megaparsec
+    , optparse-applicative
+    , sql2er
+    , text
+  default-language: Haskell2010
+
 test-suite sql2er-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
