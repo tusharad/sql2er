@@ -25,3 +25,15 @@ jobs:
       with:
         stack-build-arguments: --ghc-options="-fno-warn-unused-imports -fno-warn-unused-matches -fno-warn-type-defaults -fno-warn-missing-export-lists"
         stack-build-arguments-test: --ghc-options="-fno-warn-unused-imports -fno-warn-unused-matches -fno-warn-type-defaults -fno-warn-missing-export-lists"
+    
+    - name: Set up environment variable
+      run: echo "FLAVOUR=9.8" >> $GITHUB_ENV
+
+    - name: Download wasm32-wasi-cabal
+      run: |
+          curl https://gitlab.haskell.org/ghc/ghc-wasm-meta/-/raw/master/bootstrap.sh | sh
+          source ~/.ghc-wasm/add_to_github_path.sh
+    
+    - name: Building wasm
+      run: |
+           wasm32-wasi-cabal build sql2er-wasm -f build-sql2er-wasm
