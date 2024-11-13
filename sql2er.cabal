@@ -30,7 +30,6 @@ library
       Sql2er.CmdArgs
       Sql2er.Common.Types
       Sql2er.Common.Utils
-      Sql2er.ERDiagram
       Sql2er.Parser
       Sql2er.Parser.AlterTable
       Sql2er.Parser.Common
@@ -46,8 +45,6 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
-    , diagrams-lib
-    , diagrams-svg
     , megaparsec
     , optparse-applicative
     , text
@@ -56,6 +53,7 @@ library
 executable sql2er-exe
   main-is: Main.hs
   other-modules:
+      ERDiagram
       Paths_sql2er
   hs-source-dirs:
       app
@@ -83,8 +81,6 @@ test-suite sql2er-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , diagrams-lib
-    , diagrams-svg
     , megaparsec
     , optparse-applicative
     , sql2er

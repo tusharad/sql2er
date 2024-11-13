@@ -10,7 +10,7 @@ import Sql2er.Common.Types
 import Sql2er.Parser (parseSqlScript)
 import System.Exit (exitFailure)
 import Text.Megaparsec
-import Sql2er.ERDiagram (renderErDiagram)
+import ERDiagram (renderErDiagram)
 import Sql2er.CmdArgs (Options(..), parseCmdArgs)
 
 -- This function will find all the create table statements,

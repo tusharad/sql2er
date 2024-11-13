@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Sql2er.ERDiagram where
+module ERDiagram where
 
 import qualified Data.Text as T
 import Diagrams.Backend.SVG

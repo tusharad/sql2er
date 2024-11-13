@@ -1,7 +1,29 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 -- Common parsring functions between modules
-module Sql2er.Parser.Common where
+module Sql2er.Parser.Common
+  ( parseWord
+  , parseWordAndComma
+  , parseWordWithoutParenthesis
+  , parseWordForAlter
+  , parseDefaultValue
+  , parseTableConstraint
+  , uniqueConstraint
+  , primaryKeyConstraint
+  , checkConstraint
+  , foreignKeyConstraint
+  , excludeConstraint
+  , parseDefaultVal
+  , parseCheckForCol
+  , parsePrimaryKeyForCol
+  , parseNotNullForCol
+  , parseNullForCol
+  , parseUniqueForCol
+  , parseDefaultVForCol
+  , parseReferenceForCol
+  , ignoreConstraints
+  , parseSqlType
+  ) where
 
 import Data.Text (Text)
 import Sql2er.Common.Types
@@ -47,9 +69,9 @@ uniqueConstraint = do
       (char '(')
       (char ')')
       ( lexeme $
-          (lexeme $ takeWhile1P Nothing (`notElem` (",)" :: String)))  
+          (lexeme $ takeWhile1P Nothing (`notElem` (",)" :: String)))
             `sepBy` lexeme (char ',')
-        )
+      )
   return $ UniqueConstraint cols
 
 primaryKeyConstraint :: Parser TableConstraint

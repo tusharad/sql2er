@@ -23,8 +23,6 @@ dependencies:
 - base >= 4.7 && < 5
 - text
 - megaparsec
-- diagrams-lib
-- diagrams-svg
 - optparse-applicative
 
 ghc-options:
@@ -52,6 +50,8 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - diagrams-lib
+    - diagrams-svg
     - sql2er
 
 tests:
