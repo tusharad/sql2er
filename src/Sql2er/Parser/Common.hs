@@ -155,7 +155,7 @@ parseDefaultVForCol = Default <$> (lexeme (string "default") *> parseDefaultVal)
 parseReferenceForCol :: Parser ColumnConstraint
 parseReferenceForCol = do
   _ <- lexeme (string "references")
-  refTable <- parseWord
+  refTable <- lexeme (takeWhile1P Nothing (`notElem` (" \t\n;()" :: String)))
   refCol <-
     optional
       ( lexeme (char '(')

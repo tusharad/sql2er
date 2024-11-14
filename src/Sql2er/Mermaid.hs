@@ -6,6 +6,7 @@ module Sql2er.Mermaid where
 import Data.Text (Text)
 import Data.Text qualified as T
 import Sql2er.Common.Types
+import Data.Maybe (fromMaybe)
 
 -- Function to convert SqlType to a simplified string representation for Mermaid
 sqlTypeToString :: SqlType -> Text
@@ -65,7 +66,7 @@ addForeignKeys originTableName cols = mconcat $ map addForeignKeys_ cols
     addForeignKeys_ Column{cConstraints} = mconcat $ map referenceColumnToText cConstraints
     referenceColumnToText :: ColumnConstraint -> Text
     referenceColumnToText (ReferencesColumn tName mColName) = do
-        originTableName <> " ||--o{ " <> tName <> maybe "" (" : " <>) mColName <> "\n"
+        originTableName <> " ||--o{ " <> tName <> " : " <> fromMaybe "relation" mColName
     referenceColumnToText _ = ""
    
 -- Function to create relationship representation for ForeignKeyConstraint
