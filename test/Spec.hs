@@ -173,7 +173,7 @@ mermaidColumnReferenceTable =
   testGroup
     "Column reference table"
     [ testCase "column reference table 1" $ do
-        "erDiagram\nsummaries {\n    serial summary_id\n    integer thread_id\n    text summary_content\n    timestamp summary_created_at\n    timestamp summary_modified_at\n}\nsummaries ||--o{ threads : thread_id\n\n"
+        "erDiagram\nsummaries {\n    serial summary_id\n    integer thread_id\n    text summary_content\n    timestamp summary_created_at\n    timestamp summary_modified_at\n}\nsummaries ||--o{ threads : thread_id\n"
           @=? generateMermaidERD [foreginKeyStatement]
     ]
 
