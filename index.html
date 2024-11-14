@@ -147,7 +147,9 @@
         });
 
         function generate(sqlQuery) {
-            return `Mocked Diagram: ${sqlQuery}`;
+            const res = echo(sqlQuery) ;
+            console.log(`Mocked Diagram: ${res}`);
+            return res;
         }
 
         import { WASI } from 'https://cdn.jsdelivr.net/npm/@bjorn3/browser_wasi_shim@0.3.0/+esm'
