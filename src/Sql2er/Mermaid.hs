@@ -28,17 +28,46 @@ sqlTypeToString PGtimestamptz = "timestamptz"
 sqlTypeToString PGBigSerial = "bigserial"
 sqlTypeToString SomeType = "unknown"
 
+columnConstraintToText :: ColumnConstraint -> Text
+columnConstraintToText c =
+  case c of
+    PrimaryKey -> "Primary Key"
+    Unique -> "Unique"
+    NotNull -> "Not Null"
+    Null -> ""
+    Default t -> "Default " <> t
+    ReferencesColumn _ _ -> ""
+    Check t -> "Check " <> t
+
+columnConstraintsToText :: [ColumnConstraint] -> Text
+columnConstraintsToText = foldMap columnConstraintToText
+
 -- Function to convert a Column to Mermaid's attribute representation
 columnToMermaid :: Column -> Text
 columnToMermaid Column {columnName, columnType} =
-  "    " <> sqlTypeToString columnType <> " " <> columnName
+  "    "
+    <> sqlTypeToString columnType
+    <> " "
+    <> columnName
+    -- <> " "
+    -- <> columnConstraintsToText cConstraints TODO: Mermaid not supporting spaces
 
 -- Function to convert a Table to Mermaid's table representation
 tableToMermaid :: Table -> Text
 tableToMermaid Table {tableName, columns} =
-  T.unlines $
-    [tableName <> " {"] ++ map columnToMermaid columns ++ ["}"]
+  T.unlines 
+    ([tableName <> " {"] ++ map columnToMermaid columns ++ ["}"])
+  <> addForeignKeys tableName columns
 
+addForeignKeys :: TableName -> [Column] -> Text
+addForeignKeys originTableName cols = mconcat $ map addForeignKeys_ cols
+  where
+    addForeignKeys_ Column{cConstraints} = mconcat $ map referenceColumnToText cConstraints
+    referenceColumnToText :: ColumnConstraint -> Text
+    referenceColumnToText (ReferencesColumn tName mColName) = do
+        originTableName <> " ||--o{ " <> tName <> maybe "" (" : " <>) mColName <> "\n"
+    referenceColumnToText _ = ""
+   
 -- Function to create relationship representation for ForeignKeyConstraint
 foreignKeyToMermaid :: TableName -> TableConstraint -> [Text]
 foreignKeyToMermaid tableName (ForeignKeyConstraint targetTable targetColumn _) =
