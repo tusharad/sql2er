@@ -169,7 +169,7 @@ parseSqlScript = do
 
 parseScript :: String -> Either String String
 parseScript t =
-  case parse parseSqlScript "" (T.pack t) of
+  case parse parseSqlScript "" (T.toLower $ T.pack t) of
     Left _ -> Left "invalid"
     Right r -> do
       let finalizedTables = postParsingSetup r []
