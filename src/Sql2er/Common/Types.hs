@@ -48,7 +48,6 @@ data ColumnConstraint =
     PrimaryKey 
     | Unique 
     | NotNull 
-    | Nullable 
     | Null
     | Default Text
     | ReferencesColumn TableName (Maybe ColumnName)
