@@ -5,6 +5,36 @@ module ExamplesForTests where
 import Data.Text (Text)
 import Sql2er.Common.Types
 
+foreginKeyStatement :: Table
+foreginKeyStatement =
+  Table
+    { tableName = "summaries"
+    , columns =
+        [ Column
+            { columnName = "summary_id"
+            , columnType = PGserial
+            , cConstraints = [PrimaryKey]
+            }
+        , Column
+            { columnName = "thread_id"
+            , columnType = PGinteger
+            , cConstraints = [NotNull, ReferencesColumn "threads" (Just "thread_id")]
+            }
+        , Column {columnName = "summary_content", columnType = PGtext, cConstraints = [NotNull]}
+        , Column
+            { columnName = "summary_created_at"
+            , columnType = PGtimestamp
+            , cConstraints = [Default "now()"]
+            }
+        , Column
+            { columnName = "summary_modified_at"
+            , columnType = PGtimestamp
+            , cConstraints = [Default "now()"]
+            }
+        ]
+    , tableConstraints = []
+    }
+
 partitionConstraint :: Table
 partitionConstraint =
   Table

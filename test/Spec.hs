@@ -8,6 +8,7 @@ import ExamplesForTests
 import ExamplesForTests qualified as Ex
 import Sql2er.Common.Types
 import Sql2er.Common.Utils (begin, commit, rollback)
+import Sql2er.Mermaid (generateMermaidERD)
 import Sql2er.Parser
 import Sql2er.Parser.CreateTable (parseCreateTable)
 import Test.Tasty
@@ -61,23 +62,24 @@ testColumnConstraint =
     "column constraints"
     [ testCase "column with constraint name" $
         testParse
-           ( T.toLower
-            "create \
-            \table if not exists x (y varchar(3) CONSTRAINT \
-            \cName primary key, z int)")
-            parseCreateTable
-            Ex.constraintNamePK
-            "parsing failed for column constraint"
+          ( T.toLower
+              "create \
+              \table if not exists x (y varchar(3) CONSTRAINT \
+              \cName primary key, z int)"
+          )
+          parseCreateTable
+          Ex.constraintNamePK
+          "parsing failed for column constraint"
     , testCase "column with Null and Not Null constraints" $
         testParse
-                ( T.toLower
-                    "create \
-                    \table if not exists x (y varchar(3) Not NULL\
-                    \, z int NULL)"
-                )
-                parseCreateTable
-                Ex.columnNullNotNull
-                "parsing failed for column NULL, not NULL"
+          ( T.toLower
+              "create \
+              \table if not exists x (y varchar(3) Not NULL\
+              \, z int NULL)"
+          )
+          parseCreateTable
+          Ex.columnNullNotNull
+          "parsing failed for column NULL, not NULL"
     , testCase "column with unique constraint" $
         testParse
           ( T.toLower
@@ -87,7 +89,7 @@ testColumnConstraint =
               \, constraint zUnique unique (z))"
           )
           parseCreateTable
-          Ex.uniqueConstraint 
+          Ex.uniqueConstraint
           "parsing failed for unique column constraint"
     ]
 
@@ -102,12 +104,11 @@ testColumnConstraint =
 
 testTableConstraint :: TestTree
 testTableConstraint =
-    testGroup 
-        "table constraints" 
-    [
-        testCase "table constraints" $
-            testParse
-           ( T.toLower
+  testGroup
+    "table constraints"
+    [ testCase "table constraints" $
+        testParse
+          ( T.toLower
               "create table if not exists x (y varchar(3) unique\
               \, z int, constraint zunique unique (z),\
               \constraint asd primary key (y), constraint fKey foreign key (z) references\
@@ -116,24 +117,44 @@ testTableConstraint =
           )
           parseCreateTable
           Ex.tableConstraint
-          "Parsing failed for table constraints" 
+          "Parsing failed for table constraints"
     ]
 
 testPartitionConstraint :: TestTree
 testPartitionConstraint =
-    testGroup "partition constraint" [
-        testCase "paition with multiple parenthesis" $
-            testParse
-            (T.toLower
-                "CREATE TABLE cities (\
-    \city_id      int not null,\
-    \name         text not null,\
-    \population   bigint\
-    \) PARTITION BY LIST (left(lower(name), 1))"
-            )
-            parseCreateTable
-            Ex.partitionConstraint
-            "Parsing failed for table with partition"
+  testGroup
+    "partition constraint"
+    [ testCase "paition with multiple parenthesis" $
+        testParse
+          ( T.toLower
+              "CREATE TABLE cities (\
+              \city_id      int not null,\
+              \name         text not null,\
+              \population   bigint\
+              \) PARTITION BY LIST (left(lower(name), 1))"
+          )
+          parseCreateTable
+          Ex.partitionConstraint
+          "Parsing failed for table with partition"
+    ]
+
+foreignKeyStatements :: TestTree
+foreignKeyStatements =
+  testGroup
+    "Foreign key statements"
+    [ testCase "paition with multiple parenthesis" $
+        testParse
+          ( T.toLower
+              "CREATE TABLE summaries (\
+              \summary_id SERIAL PRIMARY KEY,\
+              \thread_id INTEGER NOT NULL REFERENCES threads (thread_id),\
+              \summary_content TEXT NOT NULL,\
+              \summary_created_at TIMESTAMP DEFAULT NOW(),\
+              \summary_modified_at TIMESTAMP DEFAULT NOW())"
+          )
+          parseCreateTable
+          Ex.foreginKeyStatement
+          "Parsing failed for table with partition"
     ]
 
 createStatementTests :: TestTree
@@ -144,12 +165,29 @@ createStatementTests =
     , testColumnConstraint
     , testTableConstraint
     , testPartitionConstraint
+    , foreignKeyStatements
+    ]
+
+mermaidColumnReferenceTable :: TestTree
+mermaidColumnReferenceTable =
+  testGroup
+    "Column reference table"
+    [ testCase "column reference table 1" $ do
+        "erDiagram\nsummaries {\n    serial summary_id\n    integer thread_id\n    text summary_content\n    timestamp summary_created_at\n    timestamp summary_modified_at\n}\nsummaries ||--o{ threads : thread_id\n\n"
+          @=? generateMermaidERD [foreginKeyStatement]
+    ]
+
+mermaidDiagramTest :: TestTree
+mermaidDiagramTest =
+  testGroup
+    "Mermaid diagram tests"
+    [ mermaidColumnReferenceTable
     ]
 
 testSqlScripts :: Text -> TestTree
 testSqlScripts t = do
   let eRes = runParser parseSqlScript "" t
-  testCase "parsing script" $ do 
+  testCase "parsing script" $ do
     assertBool "" (isRight eRes)
 
 main :: IO ()
@@ -161,4 +199,5 @@ main = do
       [ testSqlScripts testScriptContent
       , ignoreStatementTests
       , createStatementTests
+      , mermaidDiagramTest
       ]
