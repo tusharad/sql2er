@@ -8,8 +8,9 @@ import qualified Data.Text.IO as T
 import Sql2er.Parser (parseSqlScript, postParsingSetup)
 import System.Exit (exitFailure)
 import Text.Megaparsec
-import ERDiagram (renderErDiagram)
 import Sql2er.CmdArgs (Options(..), parseCmdArgs)
+import Sql2er.Mermaid (generateMermaidERD)
+import Data.Text.Encoding.Base64.URL
 
 main :: IO ()
 main = do
@@ -24,8 +25,5 @@ main = do
     Left _ -> putStrLn "parsing failed :("
     Right r -> do
       let tableList = postParsingSetup r []
-      renderErDiagram 
-        (outputFile opts)
-        (width opts)
-        (height opts)
-        tableList
+      print $ generateMermaidERD tableList
+      print $ encodeBase64 $ generateMermaidERD tableList

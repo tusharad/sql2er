@@ -14,7 +14,6 @@ runWorker cstr = do
     case res of
         Left e -> newCString e
         Right r -> newCString r
-    -- newCString res
 
 foreign export ccall "callocBuffer" callocBuffer :: Int -> IO (Ptr a)
 
