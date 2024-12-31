@@ -33,7 +33,7 @@ jobs:
 
     - name: Download wasm32-wasi-cabal
       run: |
-          curl https://gitlab.haskell.org/ghc/ghc-wasm-meta/-/raw/master/bootstrap.sh | sh
+          curl https://gitlab.haskell.org/haskell-wasm/ghc-wasm-meta/-/raw/master/bootstrap.sh | sh
           source ~/.ghc-wasm/add_to_github_path.sh
     
     - name: Building wasm
