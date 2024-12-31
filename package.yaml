@@ -24,9 +24,6 @@ dependencies:
 - text
 - megaparsec
 - optparse-applicative
-- base64
-- req
-- bytestring
 
 ghc-options:
 - -Wall
@@ -60,6 +57,9 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - sql2er
+    - base64
+    - bytestring
+    - req
   
   sql2er-wasm:
     main: Worker.hs

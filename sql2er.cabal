@@ -51,11 +51,8 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
-    , base64
-    , bytestring
     , megaparsec
     , optparse-applicative
-    , req
     , text
   default-language: Haskell2010
 
@@ -86,11 +83,8 @@ executable sql2er-wasm
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -no-hs-main -optl-mexec-model=reactor -optl-Wl,--export=hs_init,--export=hs_runWorker,--export=freeBuffer,--export=callocBuffer
   build-depends:
       base >=4.7 && <5
-    , base64
-    , bytestring
     , megaparsec
     , optparse-applicative
-    , req
     , sql2er
     , text
   default-language: Haskell2010
@@ -112,11 +106,8 @@ test-suite sql2er-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , base64
-    , bytestring
     , megaparsec
     , optparse-applicative
-    , req
     , sql2er
     , tasty
     , tasty-hunit
