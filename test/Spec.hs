@@ -112,7 +112,7 @@ testTableConstraint =
               "create table if not exists x (y varchar(3) unique\
               \, z int, constraint zunique unique (z),\
               \constraint asd primary key (y), constraint fKey foreign key (z) references\
-              \ sometable (z) on update cascade, check (z > 23),\
+              \ sometable (z) on update cascade on delete cascade, check (z > 23),\
               \constraint uniquex unique (y,z))"
           )
           parseCreateTable

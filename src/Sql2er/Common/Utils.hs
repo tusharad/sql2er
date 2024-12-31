@@ -50,7 +50,9 @@ ignoreStatement = do
       _ <- lexeme (string "function") *> takeRest
       return ()
     createTrigger = do
-      _ <- lexeme (string "create") *> lexeme (string "trigger")
+      _ <- lexeme (string "create") 
+      _ <- optional $ lexeme (string "or") *> lexeme (string "replace")
+      _ <- lexeme (string "trigger")
       _ <- optional $ lexeme (string "or") *> lexeme (string "replace")
       void $ lexeme (takeWhile1P Nothing (/= ';'))
     createIndex = do
@@ -58,5 +60,3 @@ ignoreStatement = do
       void $ optional (lexeme (string "unique"))
       void $ lexeme (string "index")
       void $ lexeme (takeWhileP Nothing (/= ';'))
-
--- void $ manyTill anySingle (char ';')

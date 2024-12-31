@@ -50,7 +50,7 @@ parseAddColumn = do
                     , parseUniqueForCol
                     , parseDefaultVForCol
                     , parseReferenceForCol
-                    , parseNullForCol 
+                    , parseNullForCol
                     , parseCheckForCol
                     ]
   t <- many (string "constraint" *> parseWordAndComma *> choice (try <$> [
@@ -59,7 +59,7 @@ parseAddColumn = do
                     , parseUniqueForCol
                     , parseDefaultVForCol
                     , parseReferenceForCol
-                    , parseNullForCol 
+                    , parseNullForCol
                     , parseCheckForCol
                     ]))
   return $
@@ -121,13 +121,13 @@ parseAlterColumnDropNotNull = do
 
 parseAddTableConstraint :: Parser AlterTableAction
 parseAddTableConstraint = do
-  _ <- lexeme (string "add") 
+  _ <- lexeme (string "add")
   AddTableConstraint <$> parseTableConstraint
 
 parseDropTableConstraint :: Parser AlterTableAction
 parseDropTableConstraint = do
   _ <- lexeme (string "drop") *> lexeme (string "constraint")
-  DropTableConstriant <$> (lexeme (takeWhile1P Nothing (`notElem` (" ,\t\n;" :: String))))
+  DropTableConstriant <$> lexeme (takeWhile1P Nothing (`notElem` (" ,\t\n;" :: String)))
 
 skipUnwantedParts :: Parser ()
 skipUnwantedParts =

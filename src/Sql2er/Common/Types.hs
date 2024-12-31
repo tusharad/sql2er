@@ -41,6 +41,7 @@ data SqlType
   | PGtimestamp
   | PGtimestamptz
   | PGBigSerial
+  | PGJsonb
   | SomeType
   deriving (Show, Eq)
 

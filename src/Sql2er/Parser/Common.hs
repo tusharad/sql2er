@@ -69,7 +69,7 @@ uniqueConstraint = do
       (char '(')
       (char ')')
       ( lexeme $
-          (lexeme $ takeWhile1P Nothing (`notElem` (",)" :: String)))
+          lexeme (takeWhile1P Nothing (`notElem` (",)" :: String)))
             `sepBy` lexeme (char ',')
       )
   return $ UniqueConstraint cols
@@ -103,6 +103,12 @@ foreignKeyConstraint = do
           (lexeme $ char ')')
           (takeWhile1P Nothing (/= ')'))
       )
+  _ <-
+    try $
+      optional $
+        lexeme (string "on")
+          *> (lexeme (string "delete") <|> lexeme (string "update"))
+          *> lexeme (string "cascade")
   _ <-
     try $
       optional $
@@ -168,6 +174,14 @@ parseReferenceForCol = do
         lexeme (string "on")
           *> (lexeme (string "delete") <|> lexeme (string "update"))
           *> takeWhile1P Nothing (`notElem` (" \t\n;,)" :: String))
+  _ <- optional space
+  _ <-
+    try $
+      optional $
+        lexeme (string "on")
+          *> (lexeme (string "delete") <|> lexeme (string "update"))
+          *> takeWhile1P Nothing (`notElem` (" \t\n;,)" :: String))
+  _ <- optional space
   return (ReferencesColumn refTable refCol)
 
 ignoreConstraints :: Parser ()
@@ -189,6 +203,7 @@ parseSqlType =
               <$ string "boolean"
           , PGbox
               <$ string "box"
+          , PGJsonb <$ string "jsonb"
           , PGbytea
               <$ string "bytea"
           , PGchar

@@ -27,6 +27,7 @@ sqlTypeToString PGint = "int"
 sqlTypeToString PGtimestamp = "timestamp"
 sqlTypeToString PGtimestamptz = "timestamptz"
 sqlTypeToString PGBigSerial = "bigserial"
+sqlTypeToString PGJsonb = "jsonb"
 sqlTypeToString SomeType = "unknown"
 
 columnConstraintToText :: ColumnConstraint -> Text
