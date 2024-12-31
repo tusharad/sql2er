@@ -37,41 +37,43 @@
 - [Acknowledgments](#acknowledgments)
 
 ---
+## [Checkout](https://tusharad.github.io/sql2er/) web version powered by WebAssembly
+
 
 ## Example
 
 **Input: `test.sql`**
 
 ```sql
-CREATE TABLE department (
-    dep_id SERIAL PRIMARY KEY, 
-    dep_name VARCHAR(30), 
-    created_at TIMESTAMPTZ DEFAULT NOW()
+begin;
+
+create table users (
+	user_id serial primary key
+  , user_name varchar(255) not null unique
+  , email varchar(255) not null unique
+  , password text not null
+  , created_at timestamptz default now()
+  , updated_at timestamptz default now()
 );
 
-CREATE TABLE employee (
-    employee_id SERIAL PRIMARY KEY, 
-    employee_name VARCHAR(30), 
-    employee_age INT, 
-    dep_id INT REFERENCES department (dep_id) ON DELETE CASCADE, 
-    created_at TIMESTAMPTZ DEFAULT NOW()
+create table user_profile_image (
+	user_id int references users on delete cascade primary key
+ ,  user_profile_image text not null
+ ,  created_at timestamptz default now()
+ ,  updated_at timestamptz default now()
 );
-
-CREATE TABLE tasks (
-    task_id INT, 
-    task_name TEXT
-);
+...
 ```
 
 **Command:**
 
 ```bash
-./sql2er-exe test.sql -o erd.svg
+./sql2er-exe test.sql -o erd.jpeg
 ```
 
 **Output:**
 
-<img src="example/erd.svg" alt="ER Diagram" width="100%" height="580">
+<img src="example/erd.jpeg" alt="ER Diagram" width="100%" height="580">
 
 ---
 
@@ -83,7 +85,7 @@ CREATE TABLE tasks (
 2. Run the tool:
 
     ```bash
-    ./sql2er-exe test.sql -o erd.svg
+    ./sql2er-exe test.sql -o erd.jpeg
     ```
 
 ### Option 2: Build from Source
@@ -95,7 +97,7 @@ CREATE TABLE tasks (
     ```bash
     stack build
     cp $(stack path --local-install-root)/bin/sql2er-exe .
-    ./sql2er-exe test.sql -o erd.svg
+    ./sql2er-exe test.sql -o erd.jpeg
     ```
 
 ### Option 3: Build WASM
@@ -140,14 +142,11 @@ For the full list of proposed features and known issues, check out the [open iss
 
 ## Limitations
 
+- Needs internet connection since, We are sending request to mermaid API.
 - **Syntax Validation:**  
   The parser doesn't validate SQL syntax; it extracts only the necessary information for generating ER diagrams.  
-- **Foreign Key Constraints:**  
-  Currently supports single-column foreign keys only.  
 - **PostgreSQL Specific:**  
   Designed and tested using PostgreSQL 17.  
-- **Function Parsing:**  
-  Parsing stops at `CREATE FUNCTION` statements.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

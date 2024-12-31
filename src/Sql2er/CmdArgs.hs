@@ -24,8 +24,8 @@ optionsParser = Options
         ( long "output"
        <> short 'o'
        <> metavar "OUTPUTFILE"
-       <> help "Output file name (default: 'output.svg')"
-       <> value "output.svg" -- Default output file
+       <> help "Output file name (default: 'output.jpeg')"
+       <> value "output.jpeg" -- Default output file
        <> showDefault )
     <*> option auto
         ( long "height"

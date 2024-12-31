@@ -25,6 +25,8 @@ dependencies:
 - megaparsec
 - optparse-applicative
 - base64
+- req
+- bytestring
 
 ghc-options:
 - -Wall
