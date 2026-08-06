@@ -39,7 +39,7 @@ jobs:
           HACKAGE_USERNAME: ${{ secrets.HACKAGE_USERNAME }}
           HACKAGE_PASSWORD: ${{ secrets.HACKAGE_PASSWORD }}
         run: |
-          SDIST_FILE=$(ls dist-newstyle/sdist/ollama-haskell-*.tar.gz | head -n 1)
+          SDIST_FILE=$(ls dist-newstyle/sdist/sql2er-*.tar.gz | head -n 1)
           echo "Publishing package ${SDIST_FILE} to Hackage..."
           cabal upload -u "${HACKAGE_USERNAME}" -p "${HACKAGE_PASSWORD}" "${SDIST_FILE}"
       - name: Upload Haddock Documentation to Hackage
@@ -47,6 +47,6 @@ jobs:
           HACKAGE_USERNAME: ${{ secrets.HACKAGE_USERNAME }}
           HACKAGE_PASSWORD: ${{ secrets.HACKAGE_PASSWORD }}
         run: |
-          DOCS_FILE=$(ls dist-newstyle/ollama-haskell-*-docs.tar.gz | head -n 1)
+          DOCS_FILE=$(ls dist-newstyle/sql2er-*-docs.tar.gz | head -n 1)
           echo "Publishing Haddock documentation ${DOCS_FILE} to Hackage..."
           cabal upload --documentation -u "${HACKAGE_USERNAME}" -p "${HACKAGE_PASSWORD}" "${DOCS_FILE}"
