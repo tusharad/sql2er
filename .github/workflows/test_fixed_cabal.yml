@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        curl_version: ['7.68.0', '7.81.0', '8.0.1', '8.4.0', '8.5.0', '8.10.1', '8.12.0']
+        curl_version: ['7.68.0', '7.81.0', '8.0.1', '8.4.0', '8.5.0', '8.8.0', '8.10.1', '8.12.0']
 
     steps:
       - name: Checkout repository
@@ -30,6 +30,7 @@ jobs:
           make -j$(nproc)
           sudo make install
           sudo ldconfig
+          which curl
           curl --version
 
       - name: Install cabal
@@ -38,32 +39,40 @@ jobs:
           cd cabal
           git checkout fix/cabal-upload-fail
           cabal --version
-          cabal install --project-file=cabal.release.project cabal-install
+          cabal install --project-file=cabal.release.project cabal-install --installdir=$HOME/.cabal/bin --overwrite-policy=always
+          sudo cp $HOME/.cabal/bin/cabal /usr/local/bin/cabal
+          echo "$HOME/.cabal/bin" >> $GITHUB_PATH
+          which cabal
           cabal --version
 
       - name: Verify package checks & tests
         run: |
           cabal check
           cabal test
+
       - name: Build Source Distribution Tarball
         run: |
           cabal sdist
+
       - name: Build Haddock Documentation Tarball for Hackage
         run: |
           cabal haddock --haddock-for-hackage --enable-doc
+
       - name: Upload Package to Hackage
         env:
           HACKAGE_USERNAME: ${{ secrets.HACKAGE_USERNAME }}
           HACKAGE_PASSWORD: ${{ secrets.HACKAGE_PASSWORD }}
         run: |
-          SDIST_FILE=$(ls dist-newstyle/sdist/sql2er-*.tar.gz | head -n 1)
+          SDIST_FILE=$(find dist-newstyle -name "sql2er-*.tar.gz" ! -name "*-docs.tar.gz" | head -n 1)
           echo "Publishing package ${SDIST_FILE} to Hackage..."
           cabal upload -u "${HACKAGE_USERNAME}" -p "${HACKAGE_PASSWORD}" "${SDIST_FILE}"
+
       - name: Upload Haddock Documentation to Hackage
         env:
           HACKAGE_USERNAME: ${{ secrets.HACKAGE_USERNAME }}
           HACKAGE_PASSWORD: ${{ secrets.HACKAGE_PASSWORD }}
         run: |
-          DOCS_FILE=$(ls dist-newstyle/sql2er-*-docs.tar.gz | head -n 1)
+          DOCS_FILE=$(find dist-newstyle -name "sql2er-*-docs.tar.gz" | head -n 1)
           echo "Publishing Haddock documentation ${DOCS_FILE} to Hackage..."
           cabal upload --documentation -u "${HACKAGE_USERNAME}" -p "${HACKAGE_PASSWORD}" "${DOCS_FILE}"
+
