@@ -5,8 +5,12 @@ on:
 
 jobs:
   publish:
-    name: Build & Publish Package and Haddock Docs to Hackage
+    name: Build & Publish Package and Haddock Docs to Hackage (curl ${{ matrix.curl_version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        curl_version: ['7.68.0', '7.81.0', '8.0.1', '8.4.0', '8.5.0', '8.10.1', '8.12.0']
 
     steps:
       - name: Checkout repository
@@ -14,6 +18,19 @@ jobs:
 
       - name: Setup Haskell
         uses: haskell-actions/setup@v2
+
+      - name: Install specific curl version (${{ matrix.curl_version }})
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libssl-dev libnghttp2-dev libzstd-dev wget
+          wget https://curl.se/download/curl-${{ matrix.curl_version }}.tar.gz
+          tar -xzf curl-${{ matrix.curl_version }}.tar.gz
+          cd curl-${{ matrix.curl_version }}
+          ./configure --prefix=/usr/local --with-ssl --with-nghttp2
+          make -j$(nproc)
+          sudo make install
+          sudo ldconfig
+          curl --version
 
       - name: Install cabal
         run: |
