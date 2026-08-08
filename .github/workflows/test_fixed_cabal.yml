@@ -22,7 +22,7 @@ jobs:
       - name: Install specific curl version (${{ matrix.curl_version }})
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libssl-dev libnghttp2-dev libzstd-dev wget
+          sudo apt-get install -y build-essential libssl-dev libnghttp2-dev libzstd-dev libpsl-dev wget
           wget https://curl.se/download/curl-${{ matrix.curl_version }}.tar.gz
           tar -xzf curl-${{ matrix.curl_version }}.tar.gz
           cd curl-${{ matrix.curl_version }}
@@ -47,6 +47,7 @@ jobs:
 
       - name: Verify package checks & tests
         run: |
+          cabal update
           cabal check
           cabal test
 

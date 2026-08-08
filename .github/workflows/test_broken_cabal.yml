@@ -20,12 +20,13 @@ jobs:
       - name: Setup Haskell
         uses: haskell-actions/setup@v2
         with:
+          ghc-version: '9.6.4'
           cabal-version: ${{ matrix.cabal_version }}
 
       - name: Install specific curl version (${{ matrix.curl_version }})
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libssl-dev libnghttp2-dev libzstd-dev wget
+          sudo apt-get install -y build-essential libssl-dev libnghttp2-dev libzstd-dev libpsl-dev wget
           wget https://curl.se/download/curl-${{ matrix.curl_version }}.tar.gz
           tar -xzf curl-${{ matrix.curl_version }}.tar.gz
           cd curl-${{ matrix.curl_version }}
@@ -45,8 +46,10 @@ jobs:
           key: ${{ runner.os }}-ghc-9.6.4-cabal-${{ matrix.cabal_version }}-curl-${{ matrix.curl_version }}-${{ hashFiles('**/*.cabal') }}
           restore-keys: |
             ${{ runner.os }}-ghc-9.6.4-cabal-${{ matrix.cabal_version }}-curl-${{ matrix.curl_version }}-
+
       - name: Verify package checks & tests
         run: |
+          cabal update
           cabal check
           cabal test
       - name: Build Source Distribution Tarball
